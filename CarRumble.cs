@@ -35,14 +35,14 @@ public class CarRumble : MonoBehaviour
         {
             // Calculate acceleration
             Vector3 acceleration = (rb.velocity - prevVelocity) / Time.deltaTime;
-            // magnitude takes the squareroot of the (x, y, z) each squared and added
+            // magnitude takes the square root of the (x, y, z) each squared and added
             float magnitude = acceleration.magnitude;
 
             // Check if acceleration exceeds the threshold to trigger rumble
             if (magnitude > rumbleAccelerationThreshold)
             {
                 // Map acceleration magnitude to rumble intensity (0 to 1 range)
-                float rumbleIntensity = Mathf.Clamp01(magnitude/ maxRumbleAcceleration);
+                float rumbleIntensity = Mathf.Clamp01(magnitude / maxRumbleAcceleration);
                 rumbleIntensity = rumbleIntensity * rumbleAccelerationMultiplier;
                 // Trigger rumble based on acceleration
                 gamepad.SetMotorSpeeds(rumbleIntensity, Mathf.Clamp01(rumbleIntensity + increaseRightRumble));
@@ -55,6 +55,24 @@ public class CarRumble : MonoBehaviour
 
             // Update previous velocity for the next frame
             prevVelocity = rb.velocity;
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (gamepad != null)
+        {
+            // Stop rumble when the object is destroyed
+            gamepad.SetMotorSpeeds(0f, 0f);
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (gamepad != null)
+        {
+            // Stop rumble when the application quits
+            gamepad.SetMotorSpeeds(0f, 0f);
         }
     }
 }
